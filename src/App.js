@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import Chess from 'chess.js'
 import Chessboard from 'react-chessboardjs'
+import Ai from './Ai'
 
 class App extends Component {
   constructor(props) {
@@ -21,14 +22,9 @@ class App extends Component {
     }
   };
 
-  makeRandomMove() {
-    var possibleMoves = this.state.game.moves();
-
-    if (possibleMoves.length === 0) return;
-
-    var randomIndex = Math.floor(Math.random() * possibleMoves.length);
-    this.state.game.move(possibleMoves[randomIndex]);
-    console.log(possibleMoves[randomIndex]);
+  makeAiMove(move) {
+    console.log("AI move:", move);
+    this.state.game.move(move)
     this.setState({
       pos: this.state.game.fen()
   })
@@ -47,7 +43,8 @@ class App extends Component {
     if (move === null) return 'snapback';
 
     // make random legal move for black
-    window.setTimeout(() => this.makeRandomMove(), 250);
+    const aiMove = Ai(this.state.game)
+    window.setTimeout(() => this.makeAiMove(aiMove), 250);
   };
 
   // update the board position after the piece snap
@@ -65,9 +62,10 @@ class App extends Component {
         <div className="App">
           <header className="App-header">
             <img src={logo} className="App-logo" alt="logo" />
-            <h1 className="App-title">Welcome to React</h1>
+            <h1 className="App-title">Alfus 1.0</h1>
           </header>
-          <div style={{ display: 'inline-block'}} >
+          <br/>
+          <div style={{ width: '400px', display: 'inline-block'}} >
             <Chessboard
               draggable={true}
               fen={this.state.pos}
