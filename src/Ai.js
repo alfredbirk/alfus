@@ -71,11 +71,13 @@ const positionWorth = {
 }
 
 var positionsConsidered = 0
+var extensions = 0
 
 export default function Ai(game) {
   console.log(game);
   console.log("*****************");
   positionsConsidered = 0
+  extensions = 0
   var possibleMoves = game.moves();
   if (possibleMoves.length === 0) return;
 
@@ -86,11 +88,16 @@ export default function Ai(game) {
 }
 
 function minimax(game, depth, a, b) {
-  if (depth === 2 && game.turn() === 'w') {
-    const evaluation = evaluate(game)
-    //glog(game, evaluation)
-    game.undo()
-    return evaluation
+  if (depth === 2) {
+    if(game.turn() === 'w' && game.history()[game.history().length - 1].indexOf('x') !== -1) {
+      extensions += 1
+    }
+    else {
+      const evaluation = evaluate(game)
+      //glog(game, evaluation)
+      game.undo()
+      return evaluation
+    }
   }
 
   var possibleMoves = game.moves();
@@ -116,6 +123,7 @@ function minimax(game, depth, a, b) {
     };
     if (depth === 0) {
       console.log("Positions considered:", positionsConsidered);
+      console.log("Extensions to prevent horizon effect:", extensions);
       console.log("BEST MOVE:", bestMove);
       console.log("Evaluation:", minVal);
 
