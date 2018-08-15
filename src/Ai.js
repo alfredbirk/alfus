@@ -15,13 +15,13 @@ export default function Ai(game) {
   var possibleMoves = game.moves();
   if (possibleMoves.length === 0) return;
 
-  const bestMove = minimax(game, 0)
+  const bestMove = minimax(game, 0, -9999, 9999)
   //var randomIndex = Math.floor(Math.random() * possibleMoves.length);
   //const move = possibleMoves[randomIndex]
   return bestMove
 }
 
-function minimax(game, depth) {
+function minimax(game, depth, a, b) {
   if (depth === 2 && game.turn() === 'w') {
     const evaluation = evaluate(game)
     //glog(game, evaluation)
@@ -38,7 +38,11 @@ function minimax(game, depth) {
     possibleMoves.forEach(function(move) {
       game.move(move)
 
-      const val = minimax(game, depth + 1)
+      const val = minimax(game, depth + 1, a, minVal)
+      if (val < a) {
+        game.undo()
+        return val
+      }
       if (val < minVal) {
         minVal = val
         bestMove = move
@@ -64,7 +68,11 @@ function minimax(game, depth) {
       game.move(move)
 
 
-      const val = minimax(game, depth)
+      const val = minimax(game, depth, maxVal, b)
+      if (val > b) {
+        game.undo()
+        return val
+      }
       if (val > maxVal) {
         maxVal = val
         bestMove = move
