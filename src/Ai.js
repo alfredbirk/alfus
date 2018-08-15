@@ -7,35 +7,54 @@ const worth = {
   k: 0,
 }
 
-function squares() {
-  let s = []
-  const letters = ['a','b','c','d','e','f','g','h']
-  for(let i=0; i<letters.length;i++) {
-    for(let j=1; j<9; j++) {
-      s.push(letters[i].concat(j))
-    }
-  }
-  return s
-}
-
 export default function Ai(game) {
   var possibleMoves = game.moves();
-  // console.log("possibleMoves:");
-  // console.log(possibleMoves);
-
-  evaluate(game)
-
   if (possibleMoves.length === 0) return;
 
-  var randomIndex = Math.floor(Math.random() * possibleMoves.length);
-  const move = possibleMoves[randomIndex]
-  return move
+  const bestMove = minimax(game, 0)
+  //var randomIndex = Math.floor(Math.random() * possibleMoves.length);
+  //const move = possibleMoves[randomIndex]
+  return bestMove
+}
 
+function minimax(game, depth) {
+  if (depth === 1) {
+    const evaluation = evaluate(game)
+    glog(game, evaluation)
+    game.undo()
+    return evaluation
+  }
+
+  var possibleMoves = game.moves();
+
+  let minVal = 9999
+  let bestMove = null
+  possibleMoves.forEach(function(move) {
+    game.move(move)
+
+    const val = minimax(game, depth + 1)
+    if (val < minVal) {
+      minVal = val
+      bestMove = move
+    }
+  });
+
+  console.log("BEST MOVE:", bestMove);
+  console.log("Evaluation:", minVal);
+
+  return bestMove
+}
+
+function glog(game, evaluation) {
+  console.log("------------------");
+  console.log("Evaluation:", evaluation);
+  console.log(game.ascii());
+  console.log("------------------");
 }
 
 function evaluate(game) {
   let points = { w: 0, b: 0 }
-  const s = squares()
+  const s = game.SQUARES
   for(let i=0; i<s.length; i++) {
     const piece = game.get(s[i])
     if(piece === null) {
