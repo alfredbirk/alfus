@@ -35,19 +35,21 @@ function minimax(game, depth, a, b) {
   {
     var minVal = 9999
     var bestMove = null
-    possibleMoves.forEach(function(move) {
+    for(var i = 0; i < possibleMoves.length; i++) {
+      const move = possibleMoves[i]
       game.move(move)
 
       const val = minimax(game, depth + 1, a, minVal)
-      if (val < a) {
-        game.undo()
-        return val
-      }
+
       if (val < minVal) {
         minVal = val
         bestMove = move
       }
-    });
+
+      if (val < a) {
+        break
+      }
+    };
     if (depth === 0) {
       console.log("Positions considered:", positionsConsidered);
       console.log("BEST MOVE:", bestMove);
@@ -64,20 +66,21 @@ function minimax(game, depth, a, b) {
   {
     var maxVal = -9999
     var bestMove = null
-    possibleMoves.forEach(function(move) {
+    for(var i = 0; i < possibleMoves.length; i++) {
+      const move = possibleMoves[i]
       game.move(move)
 
-
       const val = minimax(game, depth, maxVal, b)
-      if (val > b) {
-        game.undo()
-        return val
-      }
+
       if (val > maxVal) {
         maxVal = val
         bestMove = move
       }
-    });
+
+      if (val > b) {
+        break
+      }
+    };
     game.undo()
     return maxVal
   }
