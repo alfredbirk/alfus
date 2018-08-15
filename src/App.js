@@ -44,8 +44,11 @@ class App extends Component {
 
 
     // make random legal move for black
-    const aiMove = Ai(this.state.game)
-    this.makeAiMove(aiMove)
+    window.setTimeout(() => {
+      const aiMove = Ai(this.state.game)
+      this.makeAiMove(aiMove)}
+      , 50);
+
   };
 
   // update the board position after the piece snap
