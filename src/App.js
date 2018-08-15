@@ -18,6 +18,7 @@ class App extends Component {
   onDragStart(source, piece, position, orientation) {
     if (this.state.game.in_checkmate() === true || this.state.game.in_draw() === true ||
       piece.search(/^b/) !== -1) {
+      console.log(this.state.game.history());
       return false;
     }
   };

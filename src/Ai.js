@@ -72,13 +72,15 @@ const positionWorth = {
 
 var positionsConsidered = 0
 var extensions = 0
+var maxDepth = 2
+var margin = 10
 
 export default function Ai(game) {
   console.log(game);
   console.log("*****************");
   positionsConsidered = 0
   extensions = 0
-  var possibleMoves = game.moves();
+  var possibleMoves = game.ugly_moves();
   if (possibleMoves.length === 0) return;
 
   const bestMove = minimax(game, 0, -9999, 9999)
@@ -88,8 +90,8 @@ export default function Ai(game) {
 }
 
 function minimax(game, depth, a, b) {
-  if (depth === 2) {
-    if(game.turn() === 'w' && game.history()[game.history().length - 1].indexOf('x') !== -1) {
+  if (depth >= maxDepth) {
+    if(game.turn() == 'w' && game.history()[game.history().length - 1].indexOf('x') !== -1) {
       extensions += 1
     }
     else {
@@ -117,7 +119,7 @@ function minimax(game, depth, a, b) {
         bestMove = move
       }
 
-      if (val < a - 20) {
+      if (val < a + margin) {
         break
       }
     };
@@ -149,7 +151,7 @@ function minimax(game, depth, a, b) {
         bestMove = move
       }
 
-      if (val > b + 20) {
+      if (val > b - margin) {
         break
       }
     };
