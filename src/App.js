@@ -42,9 +42,10 @@ class App extends Component {
     // illegal move
     if (move === null) return 'snapback';
 
+
     // make random legal move for black
     const aiMove = Ai(this.state.game)
-    window.setTimeout(() => this.makeAiMove(aiMove), 250);
+    this.makeAiMove(aiMove)
   };
 
   // update the board position after the piece snap

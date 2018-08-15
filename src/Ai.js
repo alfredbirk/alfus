@@ -15,13 +15,13 @@ export default function Ai(game) {
   var possibleMoves = game.moves();
   if (possibleMoves.length === 0) return;
 
-  const bestMove = minimax(game, 0)
+  const bestMove = minimax(game, 0, -9999, 9999)
   //var randomIndex = Math.floor(Math.random() * possibleMoves.length);
   //const move = possibleMoves[randomIndex]
   return bestMove
 }
 
-function minimax(game, depth) {
+function minimax(game, depth, a, b) {
   if (depth === 2 && game.turn() === 'w') {
     const evaluation = evaluate(game)
     //glog(game, evaluation)
@@ -35,15 +35,21 @@ function minimax(game, depth) {
   {
     var minVal = 9999
     var bestMove = null
-    possibleMoves.forEach(function(move) {
+    for(var i = 0; i < possibleMoves.length; i++) {
+      const move = possibleMoves[i]
       game.move(move)
 
-      const val = minimax(game, depth + 1)
+      const val = minimax(game, depth + 1, a, minVal)
+
       if (val < minVal) {
         minVal = val
         bestMove = move
       }
-    });
+
+      if (val < a) {
+        break
+      }
+    };
     if (depth === 0) {
       console.log("Positions considered:", positionsConsidered);
       console.log("BEST MOVE:", bestMove);
@@ -60,16 +66,21 @@ function minimax(game, depth) {
   {
     var maxVal = -9999
     var bestMove = null
-    possibleMoves.forEach(function(move) {
+    for(var i = 0; i < possibleMoves.length; i++) {
+      const move = possibleMoves[i]
       game.move(move)
 
+      const val = minimax(game, depth, maxVal, b)
 
-      const val = minimax(game, depth)
       if (val > maxVal) {
         maxVal = val
         bestMove = move
       }
-    });
+
+      if (val > b) {
+        break
+      }
+    };
     game.undo()
     return maxVal
   }
