@@ -74,10 +74,13 @@ var positionsConsidered = 0
 var extensions = 0
 var maxDepth = 2
 var margin = 10
+var startTime = 0
 
 export default function Ai(game) {
   console.log(game);
   console.log("*****************");
+  startTime = performance.now()
+
   positionsConsidered = 0
   extensions = 0
   var possibleMoves = game.ugly_moves();
@@ -86,15 +89,25 @@ export default function Ai(game) {
   const bestMove = minimax(game, 0, -9999, 9999)
   //var randomIndex = Math.floor(Math.random() * possibleMoves.length);
   //const move = possibleMoves[randomIndex]
+
   return bestMove
 }
 
-function minimax(game, depth, a, b) {
+function filterCaptureMoves(moves) {
+  return moves.filter((move) => move.captured)
+}
+
+function minimax(game, depth, a, b, prevMove) {
+
+
   if (depth >= maxDepth) {
-    if(game.turn() == 'w' && game.history()[game.history().length - 1].indexOf('x') !== -1) {
-      extensions += 1
+    if(game.turn() === 'w' && prevMove.captured) {
+      //extensions += 1
     }
     else {
+      if (depth > maxDepth || game.turn() === 'b') {
+        extensions += 1
+      }
       const evaluation = evaluate(game)
       //glog(game, evaluation)
       game.undo()
@@ -102,7 +115,13 @@ function minimax(game, depth, a, b) {
     }
   }
 
-  var possibleMoves = game.moves();
+  var possibleMoves = game.ugly_moves();
+  /*
+  if (depth > maxDepth || depth === maxDepth && game.turn() === 'b') {
+    possibleMoves = filterCaptureMoves(possibleMoves)
+    // console.log(possibleMoves);
+  }
+  */
 
   if (game.turn() === 'b')
   {
@@ -110,9 +129,9 @@ function minimax(game, depth, a, b) {
     var bestMove = null
     for(var i = 0; i < possibleMoves.length; i++) {
       const move = possibleMoves[i]
-      game.move(move)
+      game.ugly_move(move)
 
-      const val = minimax(game, depth + 1, a, minVal)
+      const val = minimax(game, depth + 1, a, minVal, move)
 
       if (val < minVal) {
         minVal = val
@@ -128,6 +147,7 @@ function minimax(game, depth, a, b) {
       console.log("Extensions to prevent horizon effect:", extensions);
       console.log("BEST MOVE:", bestMove);
       console.log("Evaluation:", minVal);
+      console.log("Time:", Math.round(performance.now() - startTime), "ms");
 
       return bestMove
     }
@@ -142,9 +162,9 @@ function minimax(game, depth, a, b) {
     var bestMove = null
     for(var i = 0; i < possibleMoves.length; i++) {
       const move = possibleMoves[i]
-      game.move(move)
+      game.ugly_move(move)
 
-      const val = minimax(game, depth, maxVal, b)
+      const val = minimax(game, depth, maxVal, b, move)
 
       if (val > maxVal) {
         maxVal = val

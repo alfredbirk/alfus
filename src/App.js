@@ -25,7 +25,7 @@ class App extends Component {
 
   makeAiMove(move) {
     console.log("AI move:", move);
-    this.state.game.move(move)
+    this.state.game.ugly_move(move)
     this.setState({
       pos: this.state.game.fen()
   })
