@@ -73,7 +73,7 @@ const positionWorth = {
 var positionsConsidered = 0
 var extensions = 0
 var maxDepth = 2
-var margin = 10
+var margin = 0
 var startTime = 0
 
 export default function Ai(game) {
@@ -99,15 +99,11 @@ function filterCaptureMoves(moves) {
 
 function minimax(game, depth, a, b, prevMove) {
 
-
   if (depth >= maxDepth) {
-    if(game.turn() === 'w' && prevMove.captured) {
-      //extensions += 1
+    if (depth < maxDepth + 2 && (prevMove.captured || game.in_check()) ) {
+      extensions += 1
     }
     else {
-      if (depth > maxDepth || game.turn() === 'b') {
-        extensions += 1
-      }
       const evaluation = evaluate(game)
       //glog(game, evaluation)
       game.undo()
@@ -116,12 +112,12 @@ function minimax(game, depth, a, b, prevMove) {
   }
 
   var possibleMoves = game.ugly_moves();
-  /*
-  if (depth > maxDepth || depth === maxDepth && game.turn() === 'b') {
+
+  if (depth > maxDepth ) {
     possibleMoves = filterCaptureMoves(possibleMoves)
     // console.log(possibleMoves);
   }
-  */
+
 
   if (game.turn() === 'b')
   {
