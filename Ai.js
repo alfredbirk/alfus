@@ -75,11 +75,16 @@ var extensions = 0
 var maxDepth = 2
 var margin = 0
 var startTime = 0
+var d = {}
+
 
 function Ai(game) {
   console.log(game);
   console.log("*****************");
   startTime = performance.now()
+  for (var i = 0; i < 20; i++) {
+    d[i] = {nodes:0, bestMove:null, score:9999}
+  }
 
   positionsConsidered = 0
   extensions = 0
@@ -93,30 +98,22 @@ function Ai(game) {
   return bestMove
 }
 
-function filterCaptureMoves(moves) {
-  return moves.filter((move) => move.captured)
+function getCaptureMoves(game) {
+  var possibleMoves = game.ugly_moves();
+  return possibleMoves.filter((move) => move.captured)
 }
 
-function minimax(game, depth, a, b, prevMove) {
+function minimax(game, ply, a, b, prevMove) {
+  d[ply]["nodes"] += 1
 
-  if (depth >= maxDepth) {
-    if (depth < maxDepth + 2 && (prevMove.captured || game.in_check()) ) {
-      extensions += 1
-    }
-    else {
-      const evaluation = evaluate(game)
-      //glog(game, evaluation)
-      game.undo()
-      return evaluation
-    }
+  if (ply === maxDepth * 2) {
+    const evaluation = evaluate(game)
+    //glog(game, evaluation)
+    game.undo()
+    return evaluation
   }
 
   var possibleMoves = game.ugly_moves();
-
-  if (depth > maxDepth ) {
-    possibleMoves = filterCaptureMoves(possibleMoves)
-    // console.log(possibleMoves);
-  }
 
 
   if (game.turn() === 'b')
@@ -127,7 +124,7 @@ function minimax(game, depth, a, b, prevMove) {
       const move = possibleMoves[i]
       game.ugly_move(move)
 
-      const val = minimax(game, depth + 1, a, minVal, move)
+      const val = minimax(game, ply + 1, a, minVal, move)
 
       if (val < minVal) {
         minVal = val
@@ -138,11 +135,13 @@ function minimax(game, depth, a, b, prevMove) {
         break
       }
     };
-    if (depth === 0) {
+    if (ply === 0) {
       console.log("Positions considered:", positionsConsidered);
       console.log("Extensions to prevent horizon effect:", extensions);
-      console.log("BEST MOVE:", bestMove);
       console.log("Evaluation:", minVal);
+      for (var i = 0; i<6; i++) {
+        console.log("Depth", i + ":", d[i]);
+      }
       console.log("Time:", Math.round(performance.now() - startTime), "ms");
 
       return bestMove
@@ -160,7 +159,7 @@ function minimax(game, depth, a, b, prevMove) {
       const move = possibleMoves[i]
       game.ugly_move(move)
 
-      const val = minimax(game, depth, maxVal, b, move)
+      const val = minimax(game, ply + 1, maxVal, b, move)
 
       if (val > maxVal) {
         maxVal = val
