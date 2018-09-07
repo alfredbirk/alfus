@@ -1301,6 +1301,10 @@ var Chess = function(fen) {
     validate_fen: function(fen) {
       return validate_fen(fen);
     },
+    
+    make_pretty: function(ugly_move) {
+      return make_pretty(ugly_move)
+    },
 
     fen: function() {
       return generate_fen();

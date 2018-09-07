@@ -7,6 +7,18 @@
   <link rel="stylesheet" href="chessboard.css" />
 </head>
 <body>
+  <style type="text/css">
+.highlight-white {
+  -webkit-box-shadow: inset 0 0 3px 3px yellow;
+  -moz-box-shadow: inset 0 0 3px 3px yellow;
+  box-shadow: inset 0 0 3px 3px yellow;  
+}
+.highlight-black {
+  -webkit-box-shadow: inset 0 0 3px 3px blue;
+  -moz-box-shadow: inset 0 0 3px 3px blue;
+  box-shadow: inset 0 0 3px 3px blue;  
+}
+</style>
   <div id="myBoard" style="width: 400px"></div>
   <div id="myBoard2" style="width: 400px"></div>
   <script src="./chess.js"></script>
@@ -24,6 +36,11 @@
     }
 };
 
+  var removeHighlights = function(color) {
+    boardEl.find('.square-55d63')
+      .removeClass('highlight-' + color);
+  };
+
   var onDrop = function(source, target) {
     // see if the move is legal
 
@@ -35,7 +52,10 @@
 
     // illegal move
     if (move === null) return 'snapback';
-
+    console.log("source", source);
+    removeHighlights('white');
+    boardEl.find('.square-' + source).addClass('highlight-white');
+    boardEl.find('.square-' + target).addClass('highlight-white');
 
     // make random legal move for black
     window.setTimeout(() => {
@@ -44,21 +64,37 @@
       , 50);
 
   };
+  
+  var onMoveEnd = function() {
+  boardEl.find('.square-' + squareToHighlight)
+    .addClass('highlight-black');
+};
 
   var makeAiMove = function(move) {
-  console.log("AI move:", move);
-  chess.ugly_move(move)
-  board.position(chess.fen(), false);
-}
-
+    console.log("AI move:", move);
+    chess.ugly_move(move)
+    
+    var history = chess.history({ verbose: true})
+    var pretty_move = history[history.length - 1]
+    console.log(pretty_move);
+    // highlight black's move
+    removeHighlights('black');
+    boardEl.find('.square-' + pretty_move.from).addClass('highlight-black');
+    squareToHighlight = pretty_move.to;
+    
+    board.position(chess.fen());
+  }
   var cfg = {
     draggable: true,
     position: 'start',
     onDragStart: onDragStart,
-    onDrop: onDrop
+    onDrop: onDrop,
+    onMoveEnd: onMoveEnd
   };
   var chess = Chess()
   var board = Chessboard('#myBoard', cfg);
+  var boardEl = $('#myBoard')
+  var squareToHighlight;
 
   </script>
 </body>
