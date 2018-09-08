@@ -1,3 +1,5 @@
+https://www.birketech.com/index.html
+
 Alfus is a chess AI using the minimax algorithm with alpha-beta pruning. It has a base search depth of 3 moves, with extensions when the last move is a capture to prevent the horizon effect.
 
 The static evaluation function takes the following factors into consideration:
