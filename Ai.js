@@ -139,6 +139,7 @@ function countPieces(game) {
 }
 
 function endgameTablebase(game) {
+  console.log("alright");
   var topList = []
   var newTopList = []
   $.get(
