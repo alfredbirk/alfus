@@ -22,7 +22,8 @@ body {
   width: 1000px;
   margin: auto;
   margin-top: 50px;
-  color: white;
+  color: lightgray;
+  font-family: Helvetica;
   line-height: 1.6;
   letter-spacing: 2px;
 }
@@ -34,21 +35,13 @@ hr {
 
 .description h1 {
   text-align: center;
-  font-family: Helvetica;
 }
-
-.description p {
-
-  color: lightgray;
-  font-family: Helvetica;
-}
-
 
 /* Add a black background color to the top navigation */
 .topnav {
     background-color: #000;
     overflow: hidden;
-    border-style: solid;
+    border-bottom-style: solid;
     border-color: #999;
 }
 
