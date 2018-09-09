@@ -92,7 +92,8 @@ function Ai(game) {
   console.log("numPieces", numPieces)
 
   if (numPieces <= 7) {
-    var a = endgameTablebase(game)
+    console.log("Using endgame tablebase");
+    endgameTablebase(game)
     if (endgameMove !== null) {
       console.log("Played move from endgame tablebase:", endgameMove);
       return endgameMove
