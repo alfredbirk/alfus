@@ -861,12 +861,14 @@ var Chess = function(fen) {
     board[move.from] = null;
 
     if (move.flags & BITS.CAPTURE) {
+      /*
       if (turn === BLACK) {
         evaluation += pieceWorth[move.captured]
       }
       else {
         evaluation -= pieceWorth[move.captured]
       }
+      */
     }
 
     /* if ep capture, remove the captured pawn */
@@ -973,12 +975,14 @@ var Chess = function(fen) {
 
     if (move.flags & BITS.CAPTURE) {
       board[move.to] = {type: move.captured, color: them};
+      /*
       if (turn == 'b') {
         evaluation -= pieceWorth[move.captured]
       }
       else {
         evaluation += pieceWorth[move.captured]
       }
+      */
     } else if (move.flags & BITS.EP_CAPTURE) {
       var index;
       if (us === BLACK) {

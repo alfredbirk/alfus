@@ -220,7 +220,7 @@ function minimax(game, ply, a, b, prevMove) {
         bestMove = move
       }
 
-      if (val < a + margin) {
+      if (val <= a + margin) {
         break
       }
     };
@@ -254,7 +254,7 @@ function minimax(game, ply, a, b, prevMove) {
         bestMove = move
       }
 
-      if (val > b - margin) {
+      if (val >= b - margin) {
         break
       }
     };
@@ -275,9 +275,9 @@ function glog(game, evaluation) {
 
 function evaluate(game) {
   positionsConsidered += 1
-  var a = game.evaluation()
-  return -a
-  /*
+  //var -a = game.evaluation()
+  //return a
+
 
   let points = { w: 0, b: 0 }
 
@@ -299,5 +299,5 @@ function evaluate(game) {
   const e = points.w - points.b
 
   return e
-*/
+
 }
