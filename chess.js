@@ -49,6 +49,17 @@ var Chess = function(fen) {
   var QUEEN = 'q';
   var KING = 'k';
 
+  var pieceWorth = {
+    p: 100,
+    n: 320,
+    b: 330,
+    r: 500,
+    q: 900,
+    k: 20000,
+  }
+
+  var evaluation = 0
+
   var SYMBOLS = 'pnbrqkPNBRQK';
 
   var DEFAULT_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -849,6 +860,15 @@ var Chess = function(fen) {
     board[move.to] = board[move.from];
     board[move.from] = null;
 
+    if (move.flags & BITS.CAPTURE) {
+      if (turn === BLACK) {
+        evaluation += pieceWorth[move.captured]
+      }
+      else {
+        evaluation -= pieceWorth[move.captured]
+      }
+    }
+
     /* if ep capture, remove the captured pawn */
     if (move.flags & BITS.EP_CAPTURE) {
       if (turn === BLACK) {
@@ -953,6 +973,12 @@ var Chess = function(fen) {
 
     if (move.flags & BITS.CAPTURE) {
       board[move.to] = {type: move.captured, color: them};
+      if (turn == 'b') {
+        evaluation -= pieceWorth[move.captured]
+      }
+      else {
+        evaluation += pieceWorth[move.captured]
+      }
     } else if (move.flags & BITS.EP_CAPTURE) {
       var index;
       if (us === BLACK) {
@@ -1301,9 +1327,13 @@ var Chess = function(fen) {
     validate_fen: function(fen) {
       return validate_fen(fen);
     },
-    
+
     make_pretty: function(ugly_move) {
       return make_pretty(ugly_move)
+    },
+
+    move_number: function() {
+      return move_number;
     },
 
     fen: function() {
@@ -1615,7 +1645,7 @@ var Chess = function(fen) {
 
     undo: function() {
       var move = undo_move();
-      return (move) ? make_pretty(move) : null;
+      //return (move) ? make_pretty(move) : null;
     },
 
     clear: function() {
@@ -1624,6 +1654,10 @@ var Chess = function(fen) {
 
     put: function(piece, square) {
       return put(piece, square);
+    },
+
+    evaluation: function() {
+      return evaluation;
     },
 
     get: function(square) {

@@ -69,22 +69,31 @@ const positionWorth = {
     h8:20, g8:30, f8:10, e8:0, d8:0, c8:10, b8:30, a8:20,
   }
 }
-
+jQuery.ajaxSetup({async:false});
 var positionsConsidered = 0
 var extensions = 0
 var maxDepth = 2
 var margin = 0
-var startTime = 0
 var d = {}
+var openingMove = null
 
 
 function Ai(game) {
+  openingMove = null
   console.log(game);
   console.log("*****************");
-  startTime = performance.now()
   for (var i = 0; i < 20; i++) {
     d[i] = {nodes:0, bestMove:null, score:9999}
   }
+
+  if (game.move_number() < 10) {
+    var a = openingBook(game)
+    if (openingMove !== null) {
+      console.log("Played move from opening book:", openingMove);
+      return openingMove
+    }
+  }
+  console.log("move number", game.move_number());
 
   positionsConsidered = 0
   extensions = 0
@@ -95,7 +104,38 @@ function Ai(game) {
   //var randomIndex = Math.floor(Math.random() * possibleMoves.length);
   //const move = possibleMoves[randomIndex]
 
-  return bestMove
+  return game.make_pretty(bestMove)
+}
+
+function openingBook(game) {
+  var topList = []
+  var newTopList = []
+  $.get(
+  "https://explorer.lichess.ovh/master",
+  {fen: game.fen(), moves: 5, topGames: 0},
+  function(data) {
+    if (data.moves.length === 0) {
+      console.log("Found no moves from opening book");
+      return
+    }
+     var topList = data.moves.map(move => ({ "san": move.san, "winRatio": (move.black + 1) / (move.white + 1), "black": move.black + 1, "white": move.white + 1}))
+     for(var i = 0; i < topList.length; i++) {
+       if (topList[i].black > topList[0].black / 5 && topList[i].winRatio / topList[0].winRatio > 0.7) {
+         newTopList.push(topList[i])
+       }
+     }
+     console.log("Considered opening moves");
+     topList.forEach(function(entry) {
+      console.log(entry);
+    });
+     console.log("Best opening moves:");
+     newTopList.forEach(function(entry) {
+      console.log(entry);
+    });
+    var rand = newTopList[Math.floor(Math.random() * newTopList.length)];
+    openingMove = rand.san
+  }
+);
 }
 
 function getCaptureMoves(game) {
@@ -142,7 +182,6 @@ function minimax(game, ply, a, b, prevMove) {
       for (var i = 0; i<6; i++) {
         console.log("Depth", i + ":", d[i]);
       }
-      console.log("Time:", Math.round(performance.now() - startTime), "ms");
 
       return bestMove
     }
@@ -187,7 +226,11 @@ function glog(game, evaluation) {
 
 function evaluate(game) {
   positionsConsidered += 1
+  var a = game.evaluation()
+  return -a
+  /*
   let points = { w: 0, b: 0 }
+
   const s = game.SQUARES
   for(let i=0; i<s.length; i++) {
     const square = s[i]
@@ -196,11 +239,14 @@ function evaluate(game) {
       continue
     }
     points[piece.color] += pieceWorth[piece.type]
+
     if(piece.color === 'b') {
       points[piece.color] += positionWorth[piece.type][square]
     }
+
   }
 
   const e = points.w - points.b
   return e
+  */
 }
