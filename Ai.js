@@ -145,6 +145,7 @@ function endgameTablebase(game) {
   "http://tablebase.lichess.ovh/standard",
   {fen: game.fen()},
   function(data) {
+    console.log(data);
     if (data.moves.length === 0) {
       console.log("Found no moves from endgame tablebase");
       return
