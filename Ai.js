@@ -140,10 +140,8 @@ function countPieces(game) {
 
 function endgameTablebase(game) {
   console.log("alright");
-  var topList = []
-  var newTopList = []
   $.get(
-  "http://tablebase.lichess.ovh/standard",
+  "https://tablebase.lichess.ovh/standard",
   {fen: game.fen()},
   function(data) {
     console.log(data);
