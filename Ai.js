@@ -76,15 +76,29 @@ var maxDepth = 2
 var margin = 0
 var d = {}
 var openingMove = null
+var endgameMove = null
 
 
 function Ai(game) {
   openingMove = null
+  endgameMove = null
   console.log(game);
   console.log("*****************");
   for (var i = 0; i < 20; i++) {
     d[i] = {nodes:0, bestMove:null, score:9999}
   }
+
+  var numPieces = countPieces(game)
+  console.log("numPieces", numPieces)
+
+  if (numPieces <= 7) {
+    var a = endgameTablebase(game)
+    if (endgameMove !== null) {
+      console.log("Played move from endgame tablebase:", endgameMove);
+      return endgameMove
+    }
+  }
+  console.log("move number", game.move_number());
 
   if (game.move_number() < 10) {
     var a = openingBook(game)
@@ -94,6 +108,9 @@ function Ai(game) {
     }
   }
   console.log("move number", game.move_number());
+
+;
+
 
   positionsConsidered = 0
   extensions = 0
@@ -105,6 +122,38 @@ function Ai(game) {
   //const move = possibleMoves[randomIndex]
 
   return game.make_pretty(bestMove)
+}
+
+function countPieces(game) {
+    var numPieces = 0
+    const s = game.SQUARES
+    for(let i=0; i<s.length; i++) {
+      const square = s[i]
+      const piece = game.get(square)
+      if(piece !== null) {
+        numPieces += 1
+      }
+  }
+  return numPieces
+}
+
+function endgameTablebase(game) {
+  var topList = []
+  var newTopList = []
+  $.get(
+  "http://tablebase.lichess.ovh/standard",
+  {fen: game.fen()},
+  function(data) {
+    if (data.moves.length === 0) {
+      console.log("Found no moves from endgame tablebase");
+      return
+    }
+    var move = data.moves[0]
+
+    console.log("dtz:", move.dtz);
+    endgameMove = move.san
+  }
+);
 }
 
 function openingBook(game) {
@@ -229,6 +278,7 @@ function evaluate(game) {
   var a = game.evaluation()
   return -a
   /*
+
   let points = { w: 0, b: 0 }
 
   const s = game.SQUARES
@@ -247,6 +297,7 @@ function evaluate(game) {
   }
 
   const e = points.w - points.b
+
   return e
-  */
+*/
 }

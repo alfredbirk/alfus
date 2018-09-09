@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="robots" content="noarchive">
   <title>Alfus</title>
   <link rel="stylesheet" href="chessboard.css" />
   <link rel="stylesheet" type="text/css" href="navigation.css">
@@ -119,7 +120,7 @@
     position: 'start',
     onDragStart: onDragStart,
     onDrop: onDrop,
-    onMoveEnd: onMoveEnd
+    onMoveEnd: onMoveEnd,
   };
   var chess = Chess()
   var board = Chessboard('#myBoard', cfg);
