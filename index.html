@@ -7,6 +7,8 @@
   <title>Alfus</title>
   <link rel="stylesheet" href="chessboard.css" />
   <link rel="stylesheet" type="text/css" href="navigation.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body style="background-color:#222;">
   <div class="topnav">
@@ -30,7 +32,16 @@
   box-shadow: inset 0 0 3px 3px blue;
 }
 </style>
-  <div class="boardstyle" id="myBoard" style="width: 500px"></div>
+  <div class="boardstyle" id="myBoard" style="width: 500px">
+  </div>
+  <a href="https://github.com/alfredbirk/alfus">
+  <center>
+    <div class="github">
+      <i class="fa fa-github" style="font-size:30px;color:lightgray;margin-top:10px"></i>
+      <h3>Check out on Github</h3>
+    </div>
+  </center>
+</a>
   <script src="./chess.js"></script>
   <script src="./node_modules/jquery/dist/jquery.min.js"></script>
   <script src="./chessboardjs/src/chessboard.js"></script>
@@ -40,6 +51,7 @@
   var audioMoveSelf = new Audio('move-self.mp3')
   var audioMoveOpponent = new Audio('move-opponent.mp3')
   var audioCapture = new Audio('capture.mp3')
+  var audioCheck = new Audio('move-check.mp3')
 
   var onDragStart = function(source, piece, position, orientation) {
     if (chess.in_checkmate() === true || chess.in_draw() === true ||
@@ -71,6 +83,9 @@
 
     if (move.captured) {
       audioCapture.play()
+    }
+    else if(chess.in_check()) {
+      audioCheck.play()
     }
     else {
       audioMoveSelf.play()
@@ -107,6 +122,9 @@
 
     if (move.captured) {
       audioCapture.play()
+    }
+    else if(chess.in_check()) {
+      audioCheck.play()
     }
     else {
       audioMoveOpponent.play()
