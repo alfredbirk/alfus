@@ -32,7 +32,7 @@
   box-shadow: inset 0 0 3px 3px blue;
 }
 </style>
-  <div class="boardstyle" id="myBoard" style="width: 500px">
+  <div class="boardstyle" id="myBoard" style="width: 800px">
   </div>
   <a href="https://github.com/alfredbirk/alfus">
   <center>
@@ -96,21 +96,24 @@
       var startTime = performance.now()
       const aiMove = Ai(chess)
       var time = Math.round(performance.now() - startTime)
-      console.log("Time:", time, "ms");
+      // console.log("Time:", time, "ms");
       window.setTimeout(() => {
         makeAiMove(aiMove)}
-      , Math.max(1000-time))}
-      , 50);
+      , Math.max(300))}
+      , 300);
 
   };
 
   var onMoveEnd = function() {
   boardEl.find('.square-' + squareToHighlight)
     .addClass('highlight-black');
+
+  var fen = chess.fen().split(" ").join("_");
+  console.log(`https://lichess.org/analysis/standard/` + fen)
 };
 
   var makeAiMove = function(move) {
-    console.log("AI move:", move);
+    // console.log("AI move:", move);
     chess.move(move)
 
     var history = chess.history({ verbose: true})
@@ -139,9 +142,12 @@
     onDragStart: onDragStart,
     onDrop: onDrop,
     onMoveEnd: onMoveEnd,
+    position: 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+    
   };
-  var chess = Chess()
+  var chess = Chess('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1')
   var board = Chessboard('#myBoard', cfg);
+  // board.flip()
   var boardEl = $('#myBoard')
   var squareToHighlight;
 

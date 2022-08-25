@@ -82,14 +82,14 @@ var endgameMove = null
 function Ai(game) {
   openingMove = null
   endgameMove = null
-  console.log(game);
-  console.log("*****************");
+  // console.log(game);
+  // console.log("*****************");
   for (var i = 0; i < 20; i++) {
     d[i] = {nodes:0, bestMove:null, score:9999}
   }
 
   var numPieces = countPieces(game)
-  console.log("numPieces", numPieces)
+  // console.log("numPieces", numPieces)
 
   if (numPieces <= 7) {
     console.log("Using endgame tablebase");
@@ -99,16 +99,16 @@ function Ai(game) {
       return endgameMove
     }
   }
-  console.log("move number", game.move_number());
+  // console.log("move number", game.move_number());
 
   if (game.move_number() < 10) {
     var a = openingBook(game)
     if (openingMove !== null) {
-      console.log("Played move from opening book:", openingMove);
+      // console.log("Played move from opening book:", openingMove);
       return openingMove
     }
   }
-  console.log("move number", game.move_number());
+  // console.log("move number", game.move_number());
 
 ;
 
@@ -157,33 +157,57 @@ function endgameTablebase(game) {
 );
 }
 
+function weightedRandom(options) {
+  var i;
+
+  var weights = [];
+  
+  for (i = 0; i < options.length; i++)
+  weights[i] = options[i].black + (weights[i - 1] || 0);
+  
+  var random = Math.random() * weights[weights.length - 1];
+  
+  for (i = 0; i < weights.length; i++)
+      if (weights[i] > random)
+          break;
+  
+  return options[i];
+}
+
 function openingBook(game) {
   var topList = []
   var newTopList = []
   $.get(
-  "https://explorer.lichess.ovh/master",
-  {fen: game.fen(), moves: 5, topGames: 0},
+  "https://explorer.lichess.ovh/lichess",
+  {fen: game.fen(), moves: 5, topGames: 0, speeds:["blitz", "rapid", "classical"], ratings: [1800,2000,2200]},
   function(data) {
     if (data.moves.length === 0) {
       console.log("Found no moves from opening book");
       return
     }
      var topList = data.moves.map(move => ({ "san": move.san, "winRatio": (move.black + 1) / (move.white + 1), "black": move.black + 1, "white": move.white + 1}))
-     for(var i = 0; i < topList.length; i++) {
-       if (topList[i].black > topList[0].black / 5 && topList[i].winRatio / topList[0].winRatio > 0.7) {
-         newTopList.push(topList[i])
-       }
-     }
-     console.log("Considered opening moves");
-     topList.forEach(function(entry) {
-      console.log(entry);
-    });
-     console.log("Best opening moves:");
-     newTopList.forEach(function(entry) {
-      console.log(entry);
-    });
-    var rand = newTopList[Math.floor(Math.random() * newTopList.length)];
-    openingMove = rand.san
+    //  var total = 0
+
+    var picked = weightedRandom(topList)
+    
+    // console.log("topList", topList);
+    // console.log("picked", picked);
+    //  for(var i = 0; i < topList.length; i++) {
+    //    if (topList[i].black > topList[0].black / 5 && topList[i].winRatio / topList[0].winRatio > 0.7) {
+    //      newTopList.push(topList[i])
+    //    }
+    //  }
+    //  console.log("Considered opening moves");
+    //  topList.forEach(function(entry) {
+    //   total += entry.black
+    // });
+    // console.log("total", total);
+    //  console.log("Best opening moves:");
+    //  newTopList.forEach(function(entry) {
+    //   console.log(entry);
+    // });
+    // var rand = topList[Math.floor(Math.random() * newTopList.length)];
+    openingMove = picked.san
   }
 );
 }
